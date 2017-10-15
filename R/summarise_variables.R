@@ -9,7 +9,7 @@ summarise_variables <- function(df,
                                 weight = NULL) {
   
   #----------------------------------------------------------------------------#
-  # Section 0. Input checking
+  # Section 0. Input checking ----
   #----------------------------------------------------------------------------#
   
   if (!is.data.frame(df)) {
@@ -99,9 +99,21 @@ summarise_variables <- function(df,
     
   } else {
     
-    if (any(summary_variables %in% colnames(df))) {
+    if (any(!cols %in% colnames(df))) {
       
-      warning("")
+      stop(gettextf("the following variables specified in cols (%s) are missing from df", 
+                    paste(sQuote(setdiff(cols, 
+                                         colnames(df))),
+                          collapse = ",")))
+      
+    }
+    
+    if (any(summary_variables %in% cols)) {
+      
+      warning(gettextf("the following summary variables (%s) are in cols so have been removed", 
+                       paste(sQuote(intersect(summary_variables, 
+                                              cols)),
+                             collapse = ",")))
       
       cols <- setdiff(cols, summary_variables)
       
@@ -110,7 +122,7 @@ summarise_variables <- function(df,
   }
   
   #----------------------------------------------------------------------------#
-  # Section 1. Summarise variables
+  # Section 1. Summarise variables ----
   #----------------------------------------------------------------------------#
   
   return(summary_variables)
