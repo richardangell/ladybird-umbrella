@@ -58,7 +58,7 @@ server <- function(input, output) {
   
   for(i in 1:ntabs){
     output[[plotnames[i]]] <- renderPlot({
-      plotData <-  RV$plotData 
+      plotData <-  RV$plotData
       p <- ggplot(plotData, aes(x = x, y = value, colour = factor(group))) + 
         geom_line() + geom_point()  
       print(p)
