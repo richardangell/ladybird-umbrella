@@ -85,9 +85,13 @@ summarise_variables <- function(df,
       
     }
     
+    weight_colname <- weight
+    
     weight <- df[[weight]]
     
   } else {
+    
+    weight_colname <- NULL
     
     weight <- rep(1, nrow(df))
     
@@ -125,7 +129,30 @@ summarise_variables <- function(df,
   # Section 1. Summarise variables ----
   #----------------------------------------------------------------------------#
   
-  return(summary_variables)
+  variable_summary <- list()
+  
+  variable_summary$df_metadata <- list(nrow = nrow(df),
+                                       ncol = ncol(df),
+                                       colnames = colnames(df),
+                                       observed = observed, 
+                                       predictions1 = predictions1, 
+                                       predictions2 = predictions2, 
+                                       weight = weight_colname) 
+  
+  for (col in cols) {
+    
+    summarised_variables[[col]] <- summarise_variable(df = df,
+                                                      col = col,
+                                                      observed = observed, 
+                                                      predictions1 = predictions1, 
+                                                      predictions2 = predictions2, 
+                                                      weights = weight)  
+    
+  }
+  
+  
+  
+  return(summarised_variables)
   
   
   
