@@ -85,15 +85,17 @@ summarise_variables <- function(df,
       
     }
     
-    weight_colname <- weight
-    
-    weight <- df[[weight]]
+    if (!any(df[[weight]] > 0)) {
+      
+      stop("no weights > 0")
+      
+    }
     
   } else {
     
-    weight_colname <- NULL
+    df[["weights_column_temp_1234"]] <- rep(1, nrow(df))
     
-    weight <- rep(1, nrow(df))
+    weight <- "weights_column_temp_1234"
     
   }
   
@@ -139,6 +141,12 @@ summarise_variables <- function(df,
                                        predictions2 = predictions2, 
                                        weight = weight_colname) 
   
+  # convert to data.table
+  # could not do data.table conversion  but instead use dplyr...
+  # data.table is a smaller dependency for the project
+  # dplyr now has nicer ability to use it's functions programatically 
+  setDT(df)
+  
   for (col in cols) {
     
     summarised_variables[[col]] <- summarise_variable(df = df,
@@ -150,7 +158,18 @@ summarise_variables <- function(df,
     
   }
   
+  # coerce df back to data.frame class
+  setDF(df)
   
+  # remove weights column from df if one was added
+  # is this required?
+  # will adding the weights column to the data.frame within the function
+  #   create a copy of df? if so this should be avoided
+  if (weight == "weights_column_temp_1234") {
+    
+    df$weights_column_temp_1234 <- NULL
+    
+  }
   
   return(summarised_variables)
   

@@ -33,3 +33,4 @@ vignettes/*.pdf
 *.knit.md
 
 /R_Install
+.Rproj.user

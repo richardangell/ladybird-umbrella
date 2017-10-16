@@ -10,21 +10,28 @@ summarise_column <- function(df,
   
   nominal_classes <- c("character", "factor")
   
+  ordered_classes <- c("integer", "numeric")
   
-  if (col_class %in% ) {
+  if (any(col_class %in% nominal_classes)) {
+    
+    col_type <- "nominal"
     
     
-  } else if (col_class %in% ) {
+  } else if (any(col_class %in% ordered_classes)) {
+    
+    col_type <- "ordinal"
     
     
     
   } else {
     
-    stop()
+    stop(gettextf("unexpected class (%s) for %s", 
+                  sQuote(col_class),
+                  sQuote(col)))
     
   }
   
-  col_type <- 
+  
   
   
   
