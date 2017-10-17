@@ -16,6 +16,12 @@ summarise_column <- function(df,
     
     col_type <- "nominal"
     
+    summarised_col <- dplyr_summarise(df = df,
+                                      col = col,
+                                      observed = observed, 
+                                      predictions1 = predictions1, 
+                                      predictions2 = predictions2, 
+                                      weights = weights)
     
   } else if (any(col_class %in% ordered_classes)) {
     
@@ -31,12 +37,14 @@ summarise_column <- function(df,
     
   }
   
-  
-  
-  
-  
   column_summary <- list()
   
   column_summary$col_class <- col_class 
+  
+  column_summary$col_type <- col_type
+  
+  column_summary$summary <- summarised_col
+  
+  return(column_summary)
   
 }
