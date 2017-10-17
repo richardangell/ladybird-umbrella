@@ -1,4 +1,7 @@
 
+library(dplyr)
+library(rlang)
+
 df <- tibble(
   g1 = c(1, 1, 2, 2, 2),
   g2 = c(1, 2, 1, 2, 1),

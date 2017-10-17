@@ -3,41 +3,46 @@ library(dplyr)
 data <- data.frame(a = runif(100),
                    b = rnorm(100),
                    c = rpois(100, 3),
-                   d = rnrom(100),
+                   d = rnorm(100),
                    e = runif(100),
                    f = factor(sample(100)),
-                   g = charater(sample(100)))
+                   g = as.character(sample(5, size = 100, replace = T)))
 
 
 summarise_column(df = data,
                  col = "g",
-                 observed = NULL
+                 observed = NULL,
                  predictions1 = NULL, 
                  predictions2 = NULL, 
                  weights = NULL)
 
 summarise_column(df = data,
                  col = "g",
-                 observed = NULL
+                 observed = NULL,
                  predictions1 = NULL, 
                  predictions2 = NULL, 
                  weights = "a")
 
 summarise_column(df = data,
-                 col = "h",
-                 observed = NULL
+                 col = "f",
+                 observed = "b",
                  predictions1 = NULL, 
                  predictions2 = NULL, 
-                 weights = "b")
+                 weights = "a")
 
 summarise_column(df = data,
                  col = "e",
-                 observed = NULL
+                 observed = NULL,
                  predictions1 = NULL, 
                  predictions2 = NULL, 
                  weights = "c")
 
-
+xx <- summarise_column(df = data,
+                       col = "a",
+                       observed = "b",
+                       predictions1 = "e", 
+                       predictions2 = "d", 
+                       weights = "c")
 
 
 
