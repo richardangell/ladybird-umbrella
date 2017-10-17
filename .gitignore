@@ -32,5 +32,5 @@ vignettes/*.pdf
 *.utf8.md
 *.knit.md
 
-/R_Install
+/R_Packages
 .Rproj.user
