@@ -1,0 +1,40 @@
+library(plotly)
+library(dplyr)
+
+data <- data.frame(a = runif(100),
+                   b = rnorm(100),
+                   c = rpois(100, 3),
+                   d = rnorm(100),
+                   e = runif(100),
+                   f = factor(sample(100)),
+                   g = as.character(sample(5, size = 100, replace = T)))
+
+
+xx <- summarise_column(df = data,
+                       col = "a",
+                       observed = "b",
+                       predictions1 = "e", 
+                       predictions2 = "d", 
+                       weights = "c")
+
+
+p <- plot_ly(xx$summary) %>%
+  add_trace(x = ~binned_ordered, y = ~c, type = 'bar', name = 'c',
+            marker = list(color = 'yellow'),
+            hoverinfo = "text",
+            text = ~paste(c, ' (total weight)')) %>%
+  add_trace(x = ~binned_ordered, y = ~b, type = 'scatter', mode = 'lines', name = 'b', yaxis = 'y2',
+            line = list(color = 'pink'),
+            hoverinfo = "text",
+            text = ~paste(b, 'ave observed')) %>%
+  layout(title = 'variable: a',
+         xaxis = list(title = ""),
+         yaxis = list(side = 'right', title = 'total weight', showgrid = F, zeroline = F),
+         yaxis2 = list(side = 'left', overlaying = "y", title = 'average observed', showgrid = F, zeroline = F))
+
+
+p
+
+
+
+
