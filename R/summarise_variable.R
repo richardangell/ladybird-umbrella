@@ -1,12 +1,12 @@
 library(dplyr)
 
-data <- data.frame(a = runif(100),
-                   b = rnorm(100),
-                   c = rpois(100, 3),
-                   d = rnorm(100),
-                   e = runif(100),
-                   f = factor(sample(100)),
-                   g = as.character(sample(5, size = 100, replace = T)))
+data <- data.frame(a = c(runif(1000), rep(NA, 10)),
+                   b = rnorm(1010),
+                   c = rpois(1010, 3),
+                   d = rnorm(1010),
+                   e = runif(1010),
+                   f = factor(sample(1010)),
+                   g = as.character(sample(5, size = 1010, replace = T)))
 
 
 summarise_column(df = data,
@@ -53,7 +53,9 @@ summarise_column <- function(df,
                              observed, 
                              predictions1, 
                              predictions2, 
-                             weights) {
+                             weights,
+                             ordered_bins = 30,
+                             ordered_binning = "equal_width") {
   
   col_class <- class(df[[col]])
   
@@ -76,7 +78,10 @@ summarise_column <- function(df,
     
     col_type <- "ordinal"
 
-    df[["binned_ordered"]] <- bin_ordered(df[[col]])
+    df[["binned_ordered"]] <- bin_ordered(ordered = df[[col]],
+                                          weights = df[[weights]],
+                                          bins = ordered_bins,
+                                          binning = ordered_binning)
     
     summarised_col <- dplyr_summarise(df = df,
                                       col = "binned_ordered",
