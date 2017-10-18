@@ -101,9 +101,9 @@ plot_bar_line_graph <- function(df,
                       name = 'weight',
                       marker = list(color = 'yellow'),
                       hoverinfo = "text",
-                      text = ~ paste0(round(eval(parse(text = df[[weight]])),
-                                            rounding_digits), 
-                                     ' (sum weight)'))  
+                      text = paste0(round(eval(parse(text = df[[weight]])),
+                                          rounding_digits), 
+                                    ' (sum weight)'))  
   
     if (!is.null(line_cols)) {
       
@@ -127,17 +127,26 @@ plot_bar_line_graph <- function(df,
       }
       
       p <- p %>%  layout(#title = paste0("<br>", col),
-        title = col,
-        xaxis = list(title = ""),
-        yaxis = list(side = 'right', 
-                     title = 'total weight', 
-                     showgrid = F, 
-                     zeroline = F),
-        yaxis2 = list(side = 'left', 
-                      overlaying = "y", 
-                      title = 'average observed', 
-                      showgrid = F, 
-                      zeroline = F))
+                        title = col,
+                        xaxis = list(title = ""),
+                        yaxis = list(side = 'right', 
+                                     title = 'total weight', 
+                                     showgrid = F, 
+                                     zeroline = F),
+                        yaxis2 = list(side = 'left', 
+                                      overlaying = "y", 
+                                      title = 'response', 
+                                      showgrid = F, 
+                                      zeroline = F))
+      
+    } else {
+      
+      p <- p %>%  layout(title = col,
+                         xaxis = list(title = ""),
+                         yaxis = list(side = 'right', 
+                                      title = 'total weight', 
+                                      showgrid = F, 
+                                      zeroline = F))
       
     }
   
@@ -152,49 +161,5 @@ plot_bar_line_graph <- function(df,
 
 
 
-
-
-
-
-#----
-
-%>%
-  
-  add_trace(x = ~ eval(parse(text = col)), 
-            y = ~ eval(parse(text = observed)), 
-            type = 'scatter', 
-            mode = 'lines', 
-            name = 'observed', 
-            yaxis = 'y2',
-            line = list(color = 'pink'),
-            hoverinfo = "text",
-            text = ~ paste(round(eval(parse(text = observed)),
-                                 rounding_digits), 
-                           '(ave obs)')) %>%
-  
-  add_trace(x = ~ eval(parse(text = col)), 
-            y = ~ eval(parse(text = predictions1)), 
-            type = 'scatter', 
-            mode = 'lines', 
-            name = 'predictions1', 
-            yaxis = 'y2',
-            line = list(color = 'RED'),
-            hoverinfo = "text",
-            text = ~ paste(round(eval(parse(text = predictions1)),
-                                 rounding_digits), 
-                           '(ave predictions1)')) %>%
-  
-  layout(#title = paste0("<br>", col),
-    title = col,
-    xaxis = list(title = ""),
-    yaxis = list(side = 'right', 
-                 title = 'total weight', 
-                 showgrid = F, 
-                 zeroline = F),
-    yaxis2 = list(side = 'left', 
-                  overlaying = "y", 
-                  title = 'average observed', 
-                  showgrid = F, 
-                  zeroline = F))
 
 
