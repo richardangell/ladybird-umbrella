@@ -1,3 +1,8 @@
+# status:
+# can dynamically generate sub menu items for each variable which react
+#   to changes of the input df 
+# uncomment lines 41 onwards to have sub item tabs static but plot that updates as df does
+
 library(shiny)
 library(shinydashboard)
 
@@ -115,16 +120,18 @@ server <- function(input, output, session) {
       
       df_col_choices <- "please select data.frame"
       
-      dynamic_drop_down <- list(menuSubItem("no df selected", tabName = "no_df_selected"))
+      dynamic_drop_down <- list(menuSubItem("no df selected", 
+                                            tabName = "no_df_selected"))
       
     } else {
       
-      df_col_choices <- c("please select",
-                          colnames(get(input$dataset, envir = globalenv())))
+      selected_df_cols <- colnames(get(input$dataset, envir = globalenv()))
       
-      dynamic_drop_down <- lapply(colnames(get(input$dataset, envir = globalenv())),
+      df_col_choices <- c("please select", selected_df_cols)
+      
+      dynamic_drop_down <- lapply(selected_df_cols,
                                   function(x) menuSubItem(x, tabName = x))
-        
+     
     }
       
     updateSelectInput(session, 
@@ -149,22 +156,21 @@ server <- function(input, output, session) {
     
     output$menu <- renderMenu({
       
-      sidebarMenu(.list = list(
-        menuItem("Dashboard", 
-                 tabName = "dashboard", 
-                 icon = icon("dashboard")),
-        menuItem("Widgets", 
-                 icon = icon("th"), 
-                 tabName = "widgets"),
-        menuItem("Charts", 
-                 icon = icon("bar-chart-o"), 
-                 startExpanded = FALSE,
-                 dynamic_drop_down)
-      ), 
-      id = "channeltab"
-      )
+      sidebarMenu(.list = list(menuItem("Dashboard", 
+                                        tabName = "dashboard", 
+                                        icon = icon("dashboard")),
+                               menuItem("Widgets", 
+                                        icon = icon("th"), 
+                                        tabName = "widgets"),
+                               menuItem("Charts", 
+                                        icon = icon("bar-chart-o"), 
+                                        startExpanded = FALSE,
+                                        dynamic_drop_down)), 
+                  id = "channeltab")
       
     })
+    
+  
     
   })
   
