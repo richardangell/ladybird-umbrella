@@ -33,37 +33,26 @@ summarise_df_cols <- function(df, cols) {
 
 dashboardHeader <- dashboardHeader(title = "ladybird-umbrella")
 
-dashboardSidebar <- dashboardSidebar(
-  sidebarMenu(
-    menuItem("Dashboard", 
-             tabName = "dashboard", 
-             icon = icon("dashboard")),
-    menuItem("Widgets", 
-             icon = icon("th"), 
-             tabName = "widgets"),
-    menuItem("Charts", 
-             icon = icon("bar-chart-o"), 
-             startExpanded = FALSE,
-             menuSubItem("Sub-item 1", tabName = "subitem1"),
-             menuSubItem("Sub-item 2", tabName = "subitem2"),
-             menuSubItem("Sub-item 1", tabName = "subitem3"),
-             menuSubItem("Sub-item 1", tabName = "subitem4"),
-             menuSubItem("Sub-item 1", tabName = "subitem5"),
-             menuSubItem("Sub-item 1", tabName = "subitem6"),
-             menuSubItem("Sub-item 1", tabName = "subitem7"),
-             menuSubItem("Sub-item 1", tabName = "subitem8"),
-             menuSubItem("Sub-item 1", tabName = "subitem9"),
-             menuSubItem("Sub-item 1", tabName = "subitem10"),
-             menuSubItem("Sub-item 1", tabName = "subitem11"),
-             menuSubItem("Sub-item 1", tabName = "subitem12"),
-             menuSubItem("Sub-item 1", tabName = "subitem13"),
-             menuSubItem("Sub-item 1", tabName = "subitem14"),
-             menuSubItem("Sub-item 1", tabName = "subitem15"),
-             menuSubItem("Sub-item 1", tabName = "subitem16"))
-  ),
-  textOutput("res"),
-  tags$head(tags$style(HTML(".sidebar { height: 90vh; overflow-y: auto; }")))
-)
+#dashboardSidebar <- dashboardSidebar(
+#  sidebarMenu(
+#    menuItem("Dashboard", 
+#             tabName = "dashboard", 
+#             icon = icon("dashboard")),
+#    menuItem("Widgets", 
+#             icon = icon("th"), 
+#             tabName = "widgets"),
+#    menuItem("Charts", 
+#             icon = icon("bar-chart-o"), 
+#             startExpanded = FALSE,
+#             list(menuSubItem("Sub-item 1", tabName = "subitem1"),
+#                  menuSubItem("Sub-item 2", tabName = "subitem2")))
+#  ),
+#  textOutput("res"),
+#  tags$head(tags$style(HTML(".sidebar { height: 90vh; overflow-y: auto; }")))
+#)
+
+dashboardSidebar <- dashboardSidebar(sidebarMenuOutput("menu"))
+
 
 
 dashboardBody <- dashboardBody(
@@ -89,21 +78,7 @@ dashboardBody <- dashboardBody(
             actionButton("button", "Calculate variable summaries")),
     tabItem("widgets", "Widgets tab content"),
     tabItem("subitem1", "Sub-item 1 tab content", plotOutput("plot")),
-    tabItem("subitem2", "Sub-item 2 tab content"),
-    tabItem("subitem3", "Sub-item 1 tab content"),
-    tabItem("subitem4", "Sub-item 1 tab content"),
-    tabItem("subitem5", "Sub-item 1 tab content"),
-    tabItem("subitem6", "Sub-item 1 tab content"),
-    tabItem("subitem7", "Sub-item 1 tab content"),
-    tabItem("subitem8", "Sub-item 1 tab content"),
-    tabItem("subitem9", "Sub-item 1 tab content"),
-    tabItem("subitem10", "Sub-item 1 tab content"),
-    tabItem("subitem11", "Sub-item 1 tab content"),
-    tabItem("subitem12", "Sub-item 1 tab content"),
-    tabItem("subitem13", "Sub-item 1 tab content"),
-    tabItem("subitem14", "Sub-item 1 tab content"),
-    tabItem("subitem15", "Sub-item 1 tab content"),
-    tabItem("subitem16", "Sub-item 1 tab content")
+    tabItem("subitem2", "Sub-item 2 tab content")
   )
 )
 
@@ -127,16 +102,12 @@ server <- function(input, output, session) {
   
   observe(print(input$pred2_col))
   
-  #observe(print(input$button))
-  
   summary_reactive <- eventReactive(input$button, 
-                                    {summarise_df_cols(get(input$dataset, 
-                                                           envir = globalenv()),
+                                    {summarise_df_cols(get(input$dataset, envir = globalenv()),
                                                        colnames(get(input$dataset, envir = globalenv())))})
   
-  
-  output$plot <- renderPlot({plot(summary_reactive()[[1]], summary_reactive()[[2]])})
-  
+  output$plot <- renderPlot({plot(summary_reactive()[[1]], 
+                                  summary_reactive()[[2]])})
   
   observe({
   
@@ -144,13 +115,18 @@ server <- function(input, output, session) {
       
       df_col_choices <- "please select data.frame"
       
+      dynamic_drop_down <- list(menuSubItem("no df selected", tabName = "no_df_selected"))
+      
     } else {
       
       df_col_choices <- c("please select",
                           colnames(get(input$dataset, envir = globalenv())))
       
+      dynamic_drop_down <- lapply(colnames(get(input$dataset, envir = globalenv())),
+                                  function(x) menuSubItem(x, tabName = x))
+        
     }
-    
+      
     updateSelectInput(session, 
                       inputId = "weights_col",
                       label = "weights column (required)",
@@ -171,35 +147,34 @@ server <- function(input, output, session) {
                       label = "predictions column 2 (optional)",
                       choices = df_col_choices)
     
+    output$menu <- renderMenu({
+      
+      sidebarMenu(.list = list(
+        menuItem("Dashboard", 
+                 tabName = "dashboard", 
+                 icon = icon("dashboard")),
+        menuItem("Widgets", 
+                 icon = icon("th"), 
+                 tabName = "widgets"),
+        menuItem("Charts", 
+                 icon = icon("bar-chart-o"), 
+                 startExpanded = FALSE,
+                 dynamic_drop_down)
+      ), 
+      id = "channeltab"
+      )
+      
+    })
+    
   })
   
-  #output$input_dataset_colnames <- reactive({
-  #  
-  #  if (input$dataset == "please select") {
-  #    
-  #    "no data.frame selected"
-  #    
-  #  } else {
-  #    
-  #    colnames(get(input$dataset, envir = globalenv()))
-  #    
-  #  }})
+
   
-  #output$sub_menu_ui <- renderUI({
-  #  Tabs <- vector("list", ntabs)
-  #  for(i in 1:ntabs){
-  #    Tabs[[i]] <- tabItem(tabName = colnames(df)[i],
-  #                         h2(colnames(df)[i]))#,
-      #fluidRow(box(plotOutput("plotHist"))))
-  #  }
-  #  do.call(tabItems, Tabs)
-  #})
   
   output$res <- renderText({
     req(input$sidebarItemExpanded)
     paste("Expanded menuItem:", input$sidebarItemExpanded)
   })
-  
   
 }
 
