@@ -15,3 +15,5 @@ install.packages("ggplot2", lib = install_loc, destdir = pkg_loc)
 install.packages("data.table", lib = install_loc, destdir = pkg_loc)
 install.packages("dplyr", lib = install_loc, destdir = pkg_loc)
 install.packages("backports", lib = install_loc, destdir = pkg_loc)
+install.packages("leaflet", lib = install_loc, destdir = pkg_loc)
+
