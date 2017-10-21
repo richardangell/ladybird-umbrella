@@ -17,28 +17,28 @@ xx <- summarise_column(df = data,
                        observed = "b",
                        predictions1 = "e", 
                        predictions2 = "d", 
-                       weights = "c")
+                       weightss = "c")
 
 
 
 plot_bar_line_graph(df = xx$summary,
                     col = "binned_ordered",
-                    weight = "c")
+                    weights = "c")
 
 plot_bar_line_graph(df = xx$summary,
                     col = "binned_ordered",
-                    weight = "c",
+                    weights = "c",
                     observed = "b")
 
 plot_bar_line_graph(df = xx$summary,
                     col = "binned_ordered",
-                    weight = "c",
+                    weights = "c",
                     predictions1 = "d",
                     observed = "b")
 
 plot_bar_line_graph(df = xx$summary,
                     col = "binned_ordered",
-                    weight = "c",
+                    weights = "c",
                     predictions1 = "d",
                     predictions2 = "e",
                     observed = "b")
@@ -49,7 +49,7 @@ plot_bar_line_graph <- function(df,
                                 observed = NULL,
                                 predictions1 = NULL,
                                 predictions2 = NULL,
-                                weight,
+                                weights,
                                 rounding_digits = 5) {
   
   line_cols <- c(observed, predictions1, predictions2)
@@ -96,14 +96,13 @@ plot_bar_line_graph <- function(df,
     
     # barplot for the weights
     plotly::add_trace(x = df[[col]], 
-                      y = df[[weight]], 
+                      y = df[[weights]], 
                       type = 'bar', 
-                      name = 'weight',
+                      name = 'weights',
                       marker = list(color = 'yellow'),
                       hoverinfo = "text",
-                      text = paste0(round(eval(parse(text = df[[weight]])),
-                                          rounding_digits), 
-                                    ' (sum weight)'))  
+                      text = paste0(round(df[[weights]], rounding_digits), 
+                                    ' (sum weights)'))  
   
     if (!is.null(line_cols)) {
       
@@ -130,7 +129,7 @@ plot_bar_line_graph <- function(df,
                         title = col,
                         xaxis = list(title = ""),
                         yaxis = list(side = 'right', 
-                                     title = 'total weight', 
+                                     title = 'total weights', 
                                      showgrid = F, 
                                      zeroline = F),
                         yaxis2 = list(side = 'left', 
@@ -144,7 +143,7 @@ plot_bar_line_graph <- function(df,
       p <- p %>%  layout(title = col,
                          xaxis = list(title = ""),
                          yaxis = list(side = 'right', 
-                                      title = 'total weight', 
+                                      title = 'total weights', 
                                       showgrid = F, 
                                       zeroline = F))
       
