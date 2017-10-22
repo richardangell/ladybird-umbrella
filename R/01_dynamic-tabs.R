@@ -1,7 +1,14 @@
+#------------------------------------------------------------------------------#
 # status:
-# all tabs have the same layout; data import has empty plot box and plot tabs 
+# input data.frame hard coded
+# tabs generated according to columns in data.frame
+# each tab plots a hist of the respective column
+# drop down shows data.frames available in R session
+# - all tabs have the same layout; data import has empty plot box and plot tabs 
 #   have drop down box
-# need to set df programatically from drop down box selection
+# - need to set df programatically from drop down box selection
+#------------------------------------------------------------------------------#
+
 
 
 

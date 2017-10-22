@@ -1,9 +1,16 @@
-# status: (modified from app2)
+#------------------------------------------------------------------------------#
+# status: 
 # can dynamically generate sub menu items for each variable which react
 #   to changes of the input df 
-# (uncomment lines 41 onwards to have sub item tabs static but plot that updates as df does)
-# have 1 tab which shows summary plots, but doesn't react to changes in menu sub item selection
-#   might be easier to have multiple tabs - for for each variable
+# (uncomment lines 41 onwards to have sub item tabs static but plot that 
+#   updates as df does)
+# have 1 tab which shows summary plot for df, but doesn't react to changes in 
+#   menu sub  item selection might be easier to have multiple tabs - for for 
+#   each variable
+#------------------------------------------------------------------------------#
+
+
+
 
 library(shiny)
 library(shinydashboard)
@@ -130,9 +137,6 @@ server <- function(input, output, session) {
       dynamic_drop_down <- list(menuSubItem("no df selected", 
                                             tabName = "no_df_selected"))
       
-      dynamic_tabs <- list(tabItem("no df selected", 
-                                   paste("no df selected", "summary graphs tab content")))
-      
     } else {
       
       selected_df_cols <- colnames(get(input$dataset, envir = globalenv()))
@@ -141,13 +145,12 @@ server <- function(input, output, session) {
       
       dynamic_drop_down <- lapply(selected_df_cols,
                                   function(x) menuSubItem(x, 
-                                                          tabName = x))
-      
-      dynamic_tabs <- lapply(selected_df_cols,
-                             function(x) tabItem(x, 
-                                                 paste(x, "summary graphs tab content")))
+                                                          tabName = "summary_graphs"))
       
     }
+    
+
+    
     
     updateSelectInput(session, 
                       inputId = "weights_col",
@@ -185,41 +188,42 @@ server <- function(input, output, session) {
                   id = "channeltab")
       
     })
-      
-    output$tabs <- renderUI({
-      
-      tabs_list <- list(tabItem("dashboard", 
-                                "Dashboard tab content", 
-                                selectInput(inputId = "dataset",
-                                            label = "Choose a data.frame object:",
-                                            choices = c("please select", 
-                                                        data_frame_objects())),
-                                selectInput(inputId = "weights_col",
-                                            label = "weights column (required)",
-                                            choices = ""),
-                                selectInput(inputId = "observed_col",
-                                            label = "observed column (optional)",
-                                            choices = ""),
-                                selectInput(inputId = "pred1_col",
-                                            label = "predictions column 1 (optional)",
-                                            choices = ""),
-                                selectInput(inputId = "pred2_col",
-                                            label = "predictions column 2 (optional)",
-                                            choices = ""),
-                                actionButton("button", "Calculate variable summaries")),
-                        tabItem("widgets", "Widgets tab content"),
-                        #tabItem("summary_graphs", "summary graphs tab content")
-                        tabItem("summary_graphs", "summary graphs tab content", plotOutput("plot"))
-      )
-      
-      do.call(tabItems, c(tabs_list, dynamic_tabs))
-      
-    })
+    
+    
     
   })
   
   
-
+  output$tabs <- renderUI({
+    
+    tabs_list <- list(tabItem("dashboard", 
+                              "Dashboard tab content", 
+                              selectInput(inputId = "dataset",
+                                          label = "Choose a data.frame object:",
+                                          choices = c("please select", 
+                                                      data_frame_objects())),
+                              selectInput(inputId = "weights_col",
+                                          label = "weights column (required)",
+                                          choices = ""),
+                              selectInput(inputId = "observed_col",
+                                          label = "observed column (optional)",
+                                          choices = ""),
+                              selectInput(inputId = "pred1_col",
+                                          label = "predictions column 1 (optional)",
+                                          choices = ""),
+                              selectInput(inputId = "pred2_col",
+                                          label = "predictions column 2 (optional)",
+                                          choices = ""),
+                              actionButton("button", "Calculate variable summaries")),
+                      tabItem("widgets", "Widgets tab content"),
+                      #tabItem("summary_graphs", "summary graphs tab content")
+                      tabItem("summary_graphs", "summary graphs tab content", plotOutput("plot"))
+                    )
+    
+    do.call(tabItems, tabs_list)
+    
+  })
+  
   output$res <- renderText({
     req(input$sidebarItemExpanded)
     paste("Expanded menuItem:", input$sidebarItemExpanded)
