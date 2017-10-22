@@ -1,12 +1,8 @@
 #------------------------------------------------------------------------------#
 # status: 
-# can dynamically generate sub menu items for each variable which react
-#   to changes of the input df 
-# (uncomment lines 41 onwards to have sub item tabs static but plot that 
-#   updates as df does)
-# have 1 tab which shows summary plot for df, but doesn't react to changes in 
-#   menu sub  item selection might be easier to have multiple tabs - for for 
-#   each variable
+# don;t want all tabs to re render when df is selected ow whole app will reset
+# need to add new tabs
+# cant get insertUI to work with tabs
 #------------------------------------------------------------------------------#
 
 
@@ -151,6 +147,7 @@ server <- function(input, output, session) {
       insertUI(selector = "#subitem1", 
                where = "afterEnd", 
                ui = renderUI(do.call(tabItems, tabItem("subitem2", "Sub-item 2 tab content"))))
+               #ui =  tabItem("subitem2", "Sub-item 2 tab content"))
       
     }
     
