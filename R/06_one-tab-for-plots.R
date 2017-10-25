@@ -69,10 +69,11 @@ dashboardSidebar <- dashboardSidebar(
     menuItem("Charts", 
              icon = icon("bar-chart-o"), 
              tabName = "summary_graphs"),
-    checkboxGroupInput(inputId = "plot_var_check_box",
-                                    label = "select variable...",
-                                    choices = ""),
-                 tags$head(tags$style(HTML(".sidebar { height: 90vh; overflow-y: auto; }")))
+    radioButtons(inputId = "plot_var_check_box",
+                        label = "select variable...",
+                        choices = ""),
+    tags$head(tags$style(HTML(".sidebar { height: 90vh; overflow-y: auto; }"))),
+    id = "tabs"
   )
 )
 
@@ -135,8 +136,27 @@ server <- function(input, output, session) {
                                     {summarise_df_cols(get(input$dataset, envir = globalenv()),
                                                        colnames(get(input$dataset, envir = globalenv())))})
   
-  output$plot <- renderPlot({plot(summary_reactive()[[1]], 
-                                  summary_reactive()[[2]])})
+  output$plot <- renderPlot({
+    
+    if (input$plot_var_check_box != "please select" & 
+          input$plot_var_check_box != "please select data.frame") {
+      
+      plot(summary_reactive()[[input$plot_var_check_box]], 
+           summary_reactive()[[input$plot_var_check_box]] * 2)
+      
+    }
+    
+      
+    
+    
+    
+    
+  })
+  
+  observeEvent(input$plot_var_check_box,
+               {updateTabItems(session, 
+                               inputId = "tabs", 
+                               selected = "summary_graphs")})
   
   observe({
     
@@ -153,7 +173,8 @@ server <- function(input, output, session) {
       
       selected_df_cols <- colnames(get(input$dataset, envir = globalenv()))
       
-      df_col_choices <- c("please select", selected_df_cols)
+      df_col_choices <- c( selected_df_cols)
+      #df_col_choices <- c("please select", selected_df_cols)
       
       dynamic_drop_down <- lapply(selected_df_cols,
                                   function(x) menuSubItem(x, 
@@ -190,7 +211,7 @@ server <- function(input, output, session) {
                       choices = df_col_choices)
     
     
-    updateCheckboxGroupInput(session,
+    updateRadioButtons(session,
                         inputId = "plot_var_check_box",
                         label = "select variable...",
                         choices = df_col_choices)
