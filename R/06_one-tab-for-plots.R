@@ -60,20 +60,19 @@ dashboardHeader <- dashboardHeader(title = "ladybird-umbrella")
 
 dashboardSidebar <- dashboardSidebar(
   sidebarMenu(
-    menuItem("Dashboard", 
-             tabName = "dashboard", 
-             icon = icon("dashboard")),
-    menuItem("Widgets", 
-             icon = icon("th"), 
-             tabName = "widgets"),
-    menuItem("Charts", 
+    id = "tabs",
+    menuItem("Data Select", 
+             tabName = "data_select", 
+             icon = icon("th")),
+    menuItem("Summary Graphs", 
              icon = icon("bar-chart-o"), 
              tabName = "summary_graphs"),
     radioButtons(inputId = "plot_var_check_box",
-                        label = "select variable...",
-                        choices = ""),
-    tags$head(tags$style(HTML(".sidebar { height: 90vh; overflow-y: auto; }"))),
-    id = "tabs"
+                 label = "Select variable:",
+                 choices = ""),
+    tags$head(tags$style(HTML(
+      ".sidebar { height: 90vh; overflow-y: auto; }"
+    )))
   )
 )
 
@@ -81,31 +80,43 @@ dashboardSidebar <- dashboardSidebar(
 
 dashboardBody <- dashboardBody(
   tabItems(
-    tabItem("dashboard", 
-            "Dashboard tab content", 
-            selectInput(inputId = "dataset",
-                        label = "Choose a data.frame object:",
-                        choices = c("please select", 
-                                    data_frame_objects())),
-            selectInput(inputId = "weights_col",
-                        label = "weights column (required)",
-                        choices = ""),
-            selectInput(inputId = "observed_col",
-                        label = "observed column (optional)",
-                        choices = ""),
-            selectInput(inputId = "pred1_col",
-                        label = "predictions column 1 (optional)",
-                        choices = ""),
-            selectInput(inputId = "pred2_col",
-                        label = "predictions column 2 (optional)",
-                        choices = ""),
-            actionButton("button", "Calculate variable summaries")),
-    tabItem("widgets", "Widgets tab content"),
+    tabItem(tabName = "data_select",
+            h2("Data Select"), 
+            box(selectInput(inputId = "dataset",
+                            label = "Choose a data.frame object:",
+                            choices = c("please select", 
+                                        data_frame_objects())),
+                width = 4,
+                solidHeader = TRUE,
+                background = "maroon",
+                title = "Select data"),
+            box(selectInput(inputId = "weights_col",
+                            label = "weights column (required)",
+                            choices = ""),
+                selectInput(inputId = "observed_col",
+                            label = "observed column (optional)",
+                            choices = ""),
+                selectInput(inputId = "pred1_col",
+                            label = "predictions column 1 (optional)",
+                            choices = ""),
+                selectInput(inputId = "pred2_col",
+                            label = "predictions column 2 (optional)",
+                            choices = ""),
+                width = 4,
+                solidHeader = TRUE,
+                background = "maroon",
+                title = "Select summary columns"),
+            box(actionButton(inputId = "button", 
+                             label = "Calculate variable summaries",
+                             icon = icon("bar-chart-o")),
+                width = 4,
+                solidHeader = TRUE,
+                #status = "primary",
+                background = "maroon",
+                title = "Summarise by explanatory variables")),
+            
     tabItem("summary_graphs", 
-            "summary graphs tab content",
-            selectInput(inputId = "plot_var",
-                        label = "select variable...",
-                        choices = ""),
+            h2("Summary Graphs"),
             plotOutput("plot"))
   )
 )
@@ -114,13 +125,14 @@ dashboardBody <- dashboardBody(
 ui <- dashboardPage(dashboardHeader,
                     dashboardSidebar,
                     dashboardBody,
-                    title = "ladybird-umbrella")
+                    title = "ladybird-umbrella",
+                    skin = "blue")
 
 server <- function(input, output, session) {
   
   session$onSessionEnded(stopApp)
   
-  observe(print(paste0("channeltab: ", input$channeltab)))
+  observe(print(paste0("tab: ", input$tab)))
   
   observe(print(paste0("dataset: ", input$dataset)))
   
@@ -165,20 +177,13 @@ server <- function(input, output, session) {
     if (length(input$dataset) == 0 || input$dataset == "please select") {
       
       df_col_choices <- "please select data.frame"
-      
-      dynamic_drop_down <- list(menuSubItem("no df selected", 
-                                            tabName = "no_df_selected"))
-      
+    
     } else {
       
       selected_df_cols <- colnames(get(input$dataset, envir = globalenv()))
       
       df_col_choices <- c( selected_df_cols)
       #df_col_choices <- c("please select", selected_df_cols)
-      
-      dynamic_drop_down <- lapply(selected_df_cols,
-                                  function(x) menuSubItem(x, 
-                                                          tabName = "summary_graphs"))
       
     }
     
@@ -204,16 +209,11 @@ server <- function(input, output, session) {
                       inputId = "pred2_col",
                       label = "predictions column 2 (optional)",
                       choices = df_col_choices)
-    
-    updateSelectInput(session, 
-                      inputId = "plot_var",
-                      label = "select variable...",
-                      choices = df_col_choices)
-    
+  
     
     updateRadioButtons(session,
                         inputId = "plot_var_check_box",
-                        label = "select variable...",
+                        label = "Select Variable:",
                         choices = df_col_choices)
     
   })
