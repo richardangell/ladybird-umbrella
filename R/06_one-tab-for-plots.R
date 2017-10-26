@@ -68,7 +68,7 @@ dashboardSidebar <- dashboardSidebar(
              icon = icon("bar-chart-o"), 
              tabName = "summary_graphs"),
     radioButtons(inputId = "plot_var_check_box",
-                 label = "Select variable:",
+                 label = "Select variable to plot:",
                  choices = ""),
     tags$head(tags$style(HTML(
       ".sidebar { height: 90vh; overflow-y: auto; }"
@@ -117,7 +117,8 @@ dashboardBody <- dashboardBody(
             
     tabItem("summary_graphs", 
             h2("Summary Graphs"),
-            plotOutput("plot"))
+            textOutput("selected_variable"),
+            box(plotOutput("plot")))
   )
 )
 
@@ -158,17 +159,14 @@ server <- function(input, output, session) {
       
     }
     
-      
-    
-    
-    
-    
   })
   
-  observeEvent(input$plot_var_check_box,
-               {updateTabItems(session, 
-                               inputId = "tabs", 
-                               selected = "summary_graphs")})
+  output$selected_variable <- renderText({input$plot_var_check_box})
+  
+  #observeEvent(input$plot_var_check_box,
+  #             {updateTabItems(session, 
+  #                             inputId = "tabs", 
+  #                             selected = "summary_graphs")})
   
   observe({
     
@@ -178,43 +176,42 @@ server <- function(input, output, session) {
       
       df_col_choices <- "please select data.frame"
     
+      df_col_choices_w_please_sel <- df_col_choices
+      
     } else {
       
       selected_df_cols <- colnames(get(input$dataset, envir = globalenv()))
       
-      df_col_choices <- c( selected_df_cols)
-      #df_col_choices <- c("please select", selected_df_cols)
+      df_col_choices <- selected_df_cols
+      
+      df_col_choices_w_please_sel <- c("please select", selected_df_cols)
       
     }
-    
-    
-    
     
     updateSelectInput(session, 
                       inputId = "weights_col",
                       label = "weights column (required)",
-                      choices = df_col_choices)
+                      choices = df_col_choices_w_please_sel)
     
     updateSelectInput(session, 
                       inputId = "observed_col",
                       label = "observed column (optional)",
-                      choices = df_col_choices)
+                      choices = df_col_choices_w_please_sel)
     
     updateSelectInput(session, 
                       inputId = "pred1_col",
                       label = "predictions column 1 (optional)",
-                      choices = df_col_choices)
+                      choices = df_col_choices_w_please_sel)
     
     updateSelectInput(session, 
                       inputId = "pred2_col",
                       label = "predictions column 2 (optional)",
-                      choices = df_col_choices)
+                      choices = df_col_choices_w_please_sel)
   
-    
     updateRadioButtons(session,
-                        inputId = "plot_var_check_box",
-                        label = "Select Variable:",
-                        choices = df_col_choices)
+                       inputId = "plot_var_check_box",
+                       label = "Select variable to plot:",
+                       choices = df_col_choices)
     
   })
   
