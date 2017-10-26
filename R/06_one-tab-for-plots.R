@@ -154,6 +154,16 @@ server <- function(input, output, session) {
   
   session$onSessionEnded(stopApp)
   
+  observe(print(paste0("dataset: ", input$dataset)))
+  
+  observe(print(paste0("weights_col: ", input$weights_col)))
+  
+  observe(print(paste0("observed_col: ", input$observed_col)))
+  
+  observe(print(paste0("pred1_col: ", input$pred1_col)))
+  
+  observe(print(paste0("pred2_col: ", input$pred2_col)))
+  
   summary_reactive <- eventReactive(
     input$button, {
       summarise_df_cols(
@@ -207,6 +217,17 @@ server <- function(input, output, session) {
       
     }
     
+    #weights_col_choices <- df_col_choices
+    
+    #if (input$weights_col != "please select data.frame" &
+    #      input$weights_col != "please select") {
+    #  
+    #  df_col_choices <- setdiff(df_col_choices, input$weights_col)
+    #  
+    #}
+  
+    
+    
     updateSelectInput(
       session, 
       inputId = "weights_col",
@@ -243,6 +264,39 @@ server <- function(input, output, session) {
     )
     
   })
+  
+  observeEvent(
+    input$weights_col, {
+      if (length(input$dataset) != 0 && input$dataset != "please select") {
+        if (input$weights_col == "please select data.frame") {
+          
+          var_select_options <- "please select data.frame"
+          
+        } else if (input$weights_col == "please select") {
+          
+          var_select_options <- colnames(get(input$dataset, 
+                                             envir = globalenv()))
+          
+        } else {
+          
+          var_select_options <- setdiff(colnames(get(input$dataset, 
+                                                     envir = globalenv())),
+                                        input$weights_col)
+          
+        }
+        
+        updateRadioButtons(
+          session,
+          inputId = "plot_var_check_box",
+          label = "Select variable to plot:",
+          choices = var_select_options
+        )
+        
+      }
+      
+    }
+    
+  )
   
 }
 
