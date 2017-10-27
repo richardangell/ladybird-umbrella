@@ -199,21 +199,142 @@ server <- function(input, output, session) {
 
   observe({
     
-    # note, || to only evaluate first condition, second condition will error if
-    #   first one is true
+    #--------------------------------------------------------------------------#
+    # if the selected dataset is missing or not selected ----
+    #--------------------------------------------------------------------------#
+
+    selected_w <- NULL
+    
+    selected_o <- NULL
+    
+    selected_p1 <- NULL
+    
+    selected_p2 <- NULL
+    
+    # need || as second condition will error if first one is true
     if (length(input$dataset) == 0 || input$dataset == "please select") {
       
       df_col_choices <- "please select data.frame"
     
-      df_col_choices_w_please_sel <- df_col_choices
+      df_col_choices_p <- df_col_choices
+  
+      choices_w <- df_col_choices
       
+      choices_o <- df_col_choices
+      
+      choices_p1 <- df_col_choices
+      
+      choices_p2 <- df_col_choices
+      
+    #--------------------------------------------------------------------------#
+    # else if the input dataset has been selected ----
+    #--------------------------------------------------------------------------#
+
     } else {
+      
+      default_select <- c("please select data.frame", "please select")
       
       selected_df_cols <- colnames(get(input$dataset, envir = globalenv()))
       
       df_col_choices <- selected_df_cols
       
-      df_col_choices_w_please_sel <- c("please select", selected_df_cols)
+      df_col_choices_p <- c("please select", selected_df_cols)
+      
+      choices_w <- df_col_choices_p
+      
+      choices_o <- df_col_choices_p
+      
+      choices_p1 <- df_col_choices_p
+      
+      choices_p2 <- df_col_choices_p
+      
+      if (!input$weights_col %in% default_select) {
+        
+        df_col_choices <- setdiff(df_col_choices, input$weights_col)
+        
+        #choices_w <- setdiff(choices_w, input$weights_col)
+        
+        choices_o <- setdiff(choices_o, input$weights_col)
+        
+        choices_p1 <- setdiff(choices_p1, input$weights_col)
+        
+        choices_p2 <- setdiff(choices_p2, input$weights_col)
+        
+        selected_w <- input$weights_col
+        
+        selected_o <- input$observed_col
+        
+        selected_p1 <- input$pred1_col
+        
+        selected_p2 <- input$pred2_col
+        
+      }
+      
+      if (!input$observed_col %in% default_select) {
+        
+        df_col_choices <- setdiff(df_col_choices, input$observed_col)
+        
+        choices_w <- setdiff(choices_w, input$observed_col)
+        
+        #choices_o <- setdiff(choices_o, input$observed_col)
+        
+        choices_p1 <- setdiff(choices_p1, input$observed_col)
+        
+        choices_p2 <- setdiff(choices_p2, input$observed_col)
+        
+        selected_w <- input$weights_col
+        
+        selected_o <- input$observed_col
+        
+        selected_p1 <- input$pred1_col
+        
+        selected_p2 <- input$pred2_col
+        
+      }
+      
+      if (!input$pred1_col %in% default_select) {
+        
+        df_col_choices <- setdiff(df_col_choices, input$pred1_col)
+        
+        choices_o <- setdiff(choices_o, input$pred1_col)
+        
+        choices_w <- setdiff(choices_w, input$pred1_col)
+        
+        #choices_p1 <- setdiff(choices_p1, input$pred1_col)
+        
+        choices_p2 <- setdiff(choices_p2, input$pred1_col)
+        
+        selected_w <- input$weights_col
+        
+        selected_o <- input$observed_col
+        
+        selected_p1 <- input$pred1_col
+        
+        selected_p2 <- input$pred2_col
+        
+      }
+      
+      if (!input$pred2_col %in% default_select) {
+        
+        df_col_choices <- setdiff(df_col_choices, input$pred2_col)
+        
+        choices_o <- setdiff(choices_o, input$pred2_col)
+        
+        choices_w <- setdiff(choices_w, input$pred2_col)
+        
+        choices_p1 <- setdiff(choices_p1, input$pred2_col)
+        
+        #choices_p2 <- setdiff(choices_p2, input$pred2_col)
+        
+        selected_w <- input$weights_col
+        
+        selected_o <- input$observed_col
+        
+        selected_p1 <- input$pred1_col
+        
+        selected_p2 <- input$pred2_col
+        
+      }
       
     }
     
@@ -221,28 +342,32 @@ server <- function(input, output, session) {
       session, 
       inputId = "weights_col",
       label = "weights column (required)",
-      choices = df_col_choices_w_please_sel
+      choices = choices_w,
+      selected = selected_w
     )
     
     updateSelectInput(
       session, 
       inputId = "observed_col",
       label = "observed column (optional)",
-      choices = df_col_choices_w_please_sel
+      choices = choices_o,
+      selected = selected_o
     )
     
     updateSelectInput(
       session, 
       inputId = "pred1_col",
       label = "predictions column 1 (optional)",
-      choices = df_col_choices_w_please_sel
+      choices = choices_p1,
+      selected = selected_p1
     )
     
     updateSelectInput(
       session, 
       inputId = "pred2_col",
       label = "predictions column 2 (optional)",
-      choices = df_col_choices_w_please_sel
+      choices = choices_p2,
+      selected = selected_p2
     )
   
     updateRadioButtons(
@@ -253,66 +378,6 @@ server <- function(input, output, session) {
     )
     
   })
-  
-  observeEvent(
-    input$weights_col, {
-      if (length(input$dataset) != 0 && input$dataset != "please select") {
-        if (input$weights_col == "please select data.frame") {
-          
-          var_select_options <- "please select data.frame"
-          
-          var_select_options_please <- var_select_options
-          
-        } else if (input$weights_col == "please select") {
-          
-          var_select_options <- colnames(get(input$dataset, 
-                                             envir = globalenv()))
-          
-          var_select_options_please <- c("please select", var_select_options)
-          
-        } else {
-          
-          var_select_options <- setdiff(colnames(get(input$dataset, 
-                                                     envir = globalenv())),
-                                        input$weights_col)
-          
-          var_select_options_please <- c("please select", var_select_options)
-          
-        }
-        
-        updateSelectInput(
-          session, 
-          inputId = "observed_col",
-          label = "observed column (optional)",
-          choices = var_select_options_please
-        )
-        
-        updateSelectInput(
-          session, 
-          inputId = "pred1_col",
-          label = "predictions column 1 (optional)",
-          choices = var_select_options_please
-        )
-        
-        updateSelectInput(
-          session, 
-          inputId = "pred2_col",
-          label = "predictions column 2 (optional)",
-          choices = var_select_options_please
-        )
-        
-        updateRadioButtons(
-          session,
-          inputId = "plot_var_check_box",
-          label = "Select variable to plot:",
-          choices = var_select_options
-        )
-        
-      }
-      
-    }
-    
-  )
   
 }
 
