@@ -217,17 +217,6 @@ server <- function(input, output, session) {
       
     }
     
-    #weights_col_choices <- df_col_choices
-    
-    #if (input$weights_col != "please select data.frame" &
-    #      input$weights_col != "please select") {
-    #  
-    #  df_col_choices <- setdiff(df_col_choices, input$weights_col)
-    #  
-    #}
-  
-    
-    
     updateSelectInput(
       session, 
       inputId = "weights_col",
@@ -272,10 +261,14 @@ server <- function(input, output, session) {
           
           var_select_options <- "please select data.frame"
           
+          var_select_options_please <- var_select_options
+          
         } else if (input$weights_col == "please select") {
           
           var_select_options <- colnames(get(input$dataset, 
                                              envir = globalenv()))
+          
+          var_select_options_please <- c("please select", var_select_options)
           
         } else {
           
@@ -283,7 +276,30 @@ server <- function(input, output, session) {
                                                      envir = globalenv())),
                                         input$weights_col)
           
+          var_select_options_please <- c("please select", var_select_options)
+          
         }
+        
+        updateSelectInput(
+          session, 
+          inputId = "observed_col",
+          label = "observed column (optional)",
+          choices = var_select_options_please
+        )
+        
+        updateSelectInput(
+          session, 
+          inputId = "pred1_col",
+          label = "predictions column 1 (optional)",
+          choices = var_select_options_please
+        )
+        
+        updateSelectInput(
+          session, 
+          inputId = "pred2_col",
+          label = "predictions column 2 (optional)",
+          choices = var_select_options_please
+        )
         
         updateRadioButtons(
           session,
