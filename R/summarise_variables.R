@@ -1,5 +1,4 @@
 
-summarise_variables(df = df, observed = "c")
 
 summarise_variables <- function(df, 
                                 cols = NULL, 
@@ -99,7 +98,7 @@ summarise_variables <- function(df,
     
   }
   
-  if (!is.null(cols)) {
+  if (is.null(cols)) {
     
     cols <- setdiff(colnames(df), summary_variables)
     
@@ -133,33 +132,18 @@ summarise_variables <- function(df,
   
   variable_summary <- list()
   
-  variable_summary$df_metadata <- list(nrow = nrow(df),
-                                       ncol = ncol(df),
-                                       colnames = colnames(df),
-                                       observed = observed, 
-                                       predictions1 = predictions1, 
-                                       predictions2 = predictions2, 
-                                       weight = weight_colname) 
-  
-  # convert to data.table
-  # could not do data.table conversion  but instead use dplyr...
-  # data.table is a smaller dependency for the project
-  # dplyr now has nicer ability to use it's functions programatically 
-  setDT(df)
-  
   for (col in cols) {
     
-    summarised_variables[[col]] <- summarise_variable(df = df,
-                                                      col = col,
-                                                      observed = observed, 
-                                                      predictions1 = predictions1, 
-                                                      predictions2 = predictions2, 
-                                                      weights = weight)  
+    variable_summary[[col]] <- summarise_column(
+      df = df,
+      col = col,
+      observed = observed, 
+      predictions1 = predictions1, 
+      predictions2 = predictions2, 
+      weights = weight
+    )  
     
   }
-  
-  # coerce df back to data.frame class
-  setDF(df)
   
   # remove weights column from df if one was added
   # is this required?
@@ -171,9 +155,11 @@ summarise_variables <- function(df,
     
   }
   
-  return(summarised_variables)
+  #----------------------------------------------------------------------------#
+  # Section 2. Return results ----
+  #----------------------------------------------------------------------------#
   
-  
+  return(variable_summary)
   
 }
 

@@ -1,48 +1,3 @@
-library(plotly)
-library(dplyr)
-library(rlang)
-
-data <- data.frame(a = c(runif(1000), rep(NA, 10)),
-                   b = rnorm(1010),
-                   c = rpois(1010, 3),
-                   d = rnorm(1010),
-                   e = runif(1010),
-                   f = factor(sample(1010)),
-                   g = as.character(sample(5, size = 1010, replace = T)))
-
-
-
-xx <- summarise_column(df = data,
-                       col = "a",
-                       observed = "b",
-                       predictions1 = "e", 
-                       predictions2 = "d", 
-                       weightss = "c")
-
-
-
-plot_bar_line_graph(df = xx$summary,
-                    col = "binned_ordered",
-                    weights = "c")
-
-plot_bar_line_graph(df = xx$summary,
-                    col = "binned_ordered",
-                    weights = "c",
-                    observed = "b")
-
-plot_bar_line_graph(df = xx$summary,
-                    col = "binned_ordered",
-                    weights = "c",
-                    predictions1 = "d",
-                    observed = "b")
-
-plot_bar_line_graph(df = xx$summary,
-                    col = "binned_ordered",
-                    weights = "c",
-                    predictions1 = "d",
-                    predictions2 = "e",
-                    observed = "b")
-
 
 plot_bar_line_graph <- function(df,
                                 col,
@@ -90,7 +45,7 @@ plot_bar_line_graph <- function(df,
     }
     
   }
-
+  
   # need to find a better way to set the width so it looks good in the nb.html
   p <- plotly::plot_ly(width = 900) %>%
     
@@ -104,50 +59,50 @@ plot_bar_line_graph <- function(df,
                       text = paste0(round(df[[weights]], rounding_digits), 
                                     ' (sum weights)'))  
   
-    if (!is.null(line_cols)) {
+  if (!is.null(line_cols)) {
+    
+    # loop and add a new line for each 
+    for (i in 1:length(line_cols)) {
       
-      # loop and add a new line for each 
-      for (i in 1:length(line_cols)) {
-        
-        p <- p %>% plotly::add_trace(x = df[[col]], 
-                                     y = df[[line_cols[i]]], 
-                                     type = 'scatter', 
-                                     mode = 'lines', 
-                                     name = line_cols_type[i], 
-                                     yaxis = 'y2',
-                                     line = list(color = line_colours[i]),
-                                     hoverinfo = "text",
-                                     text = paste0(round(df[[line_cols[i]]],
-                                                         rounding_digits), 
-                                                   ' (ave ',
-                                                   line_cols_type_short[i],
-                                                   ')'))
-        
-      }
-      
-      p <- p %>%  layout(#title = paste0("<br>", col),
-                        title = col,
-                        xaxis = list(title = ""),
-                        yaxis = list(side = 'right', 
-                                     title = 'total weights', 
-                                     showgrid = F, 
-                                     zeroline = F),
-                        yaxis2 = list(side = 'left', 
-                                      overlaying = "y", 
-                                      title = 'response', 
-                                      showgrid = F, 
-                                      zeroline = F))
-      
-    } else {
-      
-      p <- p %>%  layout(title = col,
-                         xaxis = list(title = ""),
-                         yaxis = list(side = 'right', 
-                                      title = 'total weights', 
-                                      showgrid = F, 
-                                      zeroline = F))
+      p <- p %>% plotly::add_trace(x = df[[col]], 
+                                   y = df[[line_cols[i]]], 
+                                   type = 'scatter', 
+                                   mode = 'lines', 
+                                   name = line_cols_type[i], 
+                                   yaxis = 'y2',
+                                   line = list(color = line_colours[i]),
+                                   hoverinfo = "text",
+                                   text = paste0(round(df[[line_cols[i]]],
+                                                       rounding_digits), 
+                                                 ' (ave ',
+                                                 line_cols_type_short[i],
+                                                 ')'))
       
     }
+    
+    p <- p %>%  layout(#title = paste0("<br>", col),
+      title = col,
+      xaxis = list(title = ""),
+      yaxis = list(side = 'right', 
+                   title = 'total weights', 
+                   showgrid = F, 
+                   zeroline = F),
+      yaxis2 = list(side = 'left', 
+                    overlaying = "y", 
+                    title = 'response', 
+                    showgrid = F, 
+                    zeroline = F))
+    
+  } else {
+    
+    p <- p %>%  layout(title = col,
+                       xaxis = list(title = ""),
+                       yaxis = list(side = 'right', 
+                                    title = 'total weights', 
+                                    showgrid = F, 
+                                    zeroline = F))
+    
+  }
   
   return(p)
   

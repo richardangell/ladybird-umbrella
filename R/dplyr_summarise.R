@@ -1,20 +1,4 @@
 
-library(dplyr)
-library(rlang)
-
-df <- tibble(
-  g1 = c(1, 1, 2, 2, 2),
-  g2 = c(1, 2, 1, 2, 1),
-  a = sample(5), 
-  b = sample(5)
-)
-
-dplyr_summarise(df = df, 
-                col = "g1", 
-                observed = "a", 
-                predictions1 = NULL, 
-                predictions2 = NULL, 
-                weights = "b")
 
 dplyr_summarise <- function(df,
                             col,
@@ -61,7 +45,7 @@ dplyr_summarise <- function(df,
   }
   
   return(summary_results)
-
+  
 }
 
 

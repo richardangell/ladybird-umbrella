@@ -1,50 +1,3 @@
-library(dplyr)
-
-data <- data.frame(a = c(runif(1000), rep(NA, 10)),
-                   b = rnorm(1010),
-                   c = rpois(1010, 3),
-                   d = rnorm(1010),
-                   e = runif(1010),
-                   f = factor(sample(1010)),
-                   g = as.character(sample(5, size = 1010, replace = T)))
-
-
-summarise_column(df = data,
-                 col = "g",
-                 observed = NULL,
-                 predictions1 = NULL, 
-                 predictions2 = NULL, 
-                 weights = NULL)
-
-summarise_column(df = data,
-                 col = "g",
-                 observed = NULL,
-                 predictions1 = NULL, 
-                 predictions2 = NULL, 
-                 weights = "a")
-
-summarise_column(df = data,
-                 col = "f",
-                 observed = "b",
-                 predictions1 = NULL, 
-                 predictions2 = NULL, 
-                 weights = "a")
-
-summarise_column(df = data,
-                 col = "e",
-                 observed = NULL,
-                 predictions1 = NULL, 
-                 predictions2 = NULL, 
-                 weights = "c")
-
-xx <- summarise_column(df = data,
-                       col = "a",
-                       observed = "b",
-                       predictions1 = "e", 
-                       predictions2 = "d", 
-                       weights = "c")
-
-
 
 
 
@@ -77,7 +30,7 @@ summarise_column <- function(df,
   } else if (any(col_class %in% ordered_classes)) {
     
     col_type <- "ordinal"
-
+    
     df[["binned_ordered"]] <- bin_ordered(ordered = df[[col]],
                                           weights = df[[weights]],
                                           bins = ordered_bins,
@@ -89,6 +42,10 @@ summarise_column <- function(df,
                                       predictions1 = predictions1, 
                                       predictions2 = predictions2, 
                                       weights = weights)
+    
+    colnames(summarised_col) <- gsub("binned_ordered",
+                                     col,
+                                     colnames(summarised_col))
     
     # remove the bucketed column - don't want to add to the data.frame
     #   input by the user - but as a future enhancement...
