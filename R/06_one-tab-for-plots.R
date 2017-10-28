@@ -275,6 +275,91 @@ server <- function(input, output, session) {
      
    })
   
+  available_cols_update <- function() {
+    
+    selected_df_cols <- colnames(get(input$dataset, envir = globalenv()))
+    
+    selected_w <- input$weights_col
+    
+    selected_o <- input$observed_col
+    
+    selected_p1 <- input$pred1_col
+    
+    selected_p2 <- input$pred2_col
+    
+    reduced_df_cols <- setdiff(selected_df_cols,
+                               c(selected_w,
+                                 selected_o,
+                                 selected_p1,
+                                 selected_p2))
+    
+    if (length(reduced_df_cols) == 0) {
+      
+      reduced_df_cols <- "no columns left to select"
+      
+    }
+    
+    choices_w <- setdiff(selected_df_cols,
+                         c(selected_o,
+                           selected_p1,
+                           selected_p2))
+    
+    choices_o <- setdiff(selected_df_cols,
+                         c(selected_w,
+                           selected_p1,
+                           selected_p2))
+    
+    choices_p1 <- setdiff(selected_df_cols,
+                          c(selected_o,
+                            selected_w,
+                            selected_p2))
+    
+    choices_p2 <- setdiff(selected_df_cols,
+                          c(selected_o,
+                            selected_w,
+                            selected_p1))
+    
+    updateSelectInput(
+      session, 
+      inputId = "weights_col",
+      label = "weights column (required)",
+      choices = c("please select", choices_w),
+      selected = selected_w
+    )
+    
+    updateSelectInput(
+      session, 
+      inputId = "observed_col",
+      label = "observed column (optional)",
+      choices = c("please select", choices_o),
+      selected = selected_o
+    )
+    
+    updateSelectInput(
+      session, 
+      inputId = "pred1_col",
+      label = "predictions column 1 (optional)",
+      choices = c("please select", choices_p1),
+      selected = selected_p1
+    )
+    
+    updateSelectInput(
+      session, 
+      inputId = "pred2_col",
+      label = "predictions column 2 (optional)",
+      choices = c("please select", choices_p2),
+      selected = selected_p2
+    )
+    
+    updateRadioButtons(
+      session,
+      inputId = "plot_var_check_box",
+      label = "Select variable to plot:",
+      choices = reduced_df_cols
+    )
+    
+  }
+  
   observeEvent(input$weights_col, {
     
     default_select <- c("please select data.frame")#, "please select")
@@ -283,86 +368,7 @@ server <- function(input, output, session) {
         input$dataset != "please select" && 
         !input$weights_col %in% default_select) {
       
-      selected_df_cols <- colnames(get(input$dataset, envir = globalenv()))
-      
-      selected_w <- input$weights_col
-      
-      selected_o <- input$observed_col
-      
-      selected_p1 <- input$pred1_col
-      
-      selected_p2 <- input$pred2_col
-      
-      reduced_df_cols <- setdiff(selected_df_cols,
-                                 c(selected_w,
-                                   selected_o,
-                                   selected_p1,
-                                   selected_p2))
-      
-      if (length(reduced_df_cols) == 0) {
-        
-        reduced_df_cols <- "no columns left to select"
-        
-      }
-      
-      choices_w <- setdiff(selected_df_cols,
-                           c(selected_o,
-                             selected_p1,
-                             selected_p2))
-      
-      choices_o <- setdiff(selected_df_cols,
-                           c(selected_w,
-                             selected_p1,
-                             selected_p2))
-      
-      choices_p1 <- setdiff(selected_df_cols,
-                            c(selected_o,
-                              selected_w,
-                              selected_p2))
-      
-      choices_p2 <- setdiff(selected_df_cols,
-                            c(selected_o,
-                              selected_w,
-                              selected_p1))
-      
-      updateSelectInput(
-        session, 
-        inputId = "weights_col",
-        label = "weights column (required)",
-        choices = c("please select", choices_w),
-        selected = selected_w
-      )
-      
-      updateSelectInput(
-        session, 
-        inputId = "observed_col",
-        label = "observed column (optional)",
-        choices = c("please select", choices_o),
-        selected = selected_o
-      )
-      
-      updateSelectInput(
-        session, 
-        inputId = "pred1_col",
-        label = "predictions column 1 (optional)",
-        choices = c("please select", choices_p1),
-        selected = selected_p1
-      )
-      
-      updateSelectInput(
-        session, 
-        inputId = "pred2_col",
-        label = "predictions column 2 (optional)",
-        choices = c("please select", choices_p2),
-        selected = selected_p2
-      )
-      
-      updateRadioButtons(
-        session,
-        inputId = "plot_var_check_box",
-        label = "Select variable to plot:",
-        choices = reduced_df_cols
-      )
+      available_cols_update()
         
     }
     
@@ -376,86 +382,7 @@ server <- function(input, output, session) {
         input$dataset != "please select" && 
         !input$observed_col %in% default_select) {
       
-      selected_df_cols <- colnames(get(input$dataset, envir = globalenv()))
-      
-      selected_w <- input$weights_col
-      
-      selected_o <- input$observed_col
-      
-      selected_p1 <- input$pred1_col
-      
-      selected_p2 <- input$pred2_col
-      
-      reduced_df_cols <- setdiff(selected_df_cols,
-                                 c(selected_w,
-                                   selected_o,
-                                   selected_p1,
-                                   selected_p2))
-      
-      if (length(reduced_df_cols) == 0) {
-        
-        reduced_df_cols <- "no columns left to select"
-        
-      }
-      
-      choices_w <- setdiff(selected_df_cols,
-                           c(selected_o,
-                             selected_p1,
-                             selected_p2))
-      
-      choices_o <- setdiff(selected_df_cols,
-                           c(selected_w,
-                             selected_p1,
-                             selected_p2))
-      
-      choices_p1 <- setdiff(selected_df_cols,
-                            c(selected_o,
-                              selected_w,
-                              selected_p2))
-      
-      choices_p2 <- setdiff(selected_df_cols,
-                            c(selected_o,
-                              selected_w,
-                              selected_p1))
-      
-      updateSelectInput(
-        session, 
-        inputId = "weights_col",
-        label = "weights column (required)",
-        choices = c("please select", choices_w),
-        selected = selected_w
-      )
-      
-      updateSelectInput(
-        session, 
-        inputId = "observed_col",
-        label = "observed column (optional)",
-        choices = c("please select", choices_o),
-        selected = selected_o
-      )
-      
-      updateSelectInput(
-        session, 
-        inputId = "pred1_col",
-        label = "predictions column 1 (optional)",
-        choices = c("please select", choices_p1),
-        selected = selected_p1
-      )
-      
-      updateSelectInput(
-        session, 
-        inputId = "pred2_col",
-        label = "predictions column 2 (optional)",
-        choices = c("please select", choices_p2),
-        selected = selected_p2
-      )
-      
-      updateRadioButtons(
-        session,
-        inputId = "plot_var_check_box",
-        label = "Select variable to plot:",
-        choices = reduced_df_cols
-      )
+      available_cols_update()
       
     }
     
@@ -469,86 +396,7 @@ server <- function(input, output, session) {
         input$dataset != "please select" && 
         !input$pred1_col %in% default_select) {
       
-      selected_df_cols <- colnames(get(input$dataset, envir = globalenv()))
-      
-      selected_w <- input$weights_col
-      
-      selected_o <- input$observed_col
-      
-      selected_p1 <- input$pred1_col
-      
-      selected_p2 <- input$pred2_col
-      
-      reduced_df_cols <- setdiff(selected_df_cols,
-                                 c(selected_w,
-                                   selected_o,
-                                   selected_p1,
-                                   selected_p2))
-      
-      if (length(reduced_df_cols) == 0) {
-        
-        reduced_df_cols <- "no columns left to select"
-        
-      }
-      
-      choices_w <- setdiff(selected_df_cols,
-                           c(selected_o,
-                             selected_p1,
-                             selected_p2))
-      
-      choices_o <- setdiff(selected_df_cols,
-                           c(selected_w,
-                             selected_p1,
-                             selected_p2))
-      
-      choices_p1 <- setdiff(selected_df_cols,
-                            c(selected_o,
-                              selected_w,
-                              selected_p2))
-      
-      choices_p2 <- setdiff(selected_df_cols,
-                            c(selected_o,
-                              selected_w,
-                              selected_p1))
-      
-      updateSelectInput(
-        session, 
-        inputId = "weights_col",
-        label = "weights column (required)",
-        choices = c("please select", choices_w),
-        selected = selected_w
-      )
-      
-      updateSelectInput(
-        session, 
-        inputId = "observed_col",
-        label = "observed column (optional)",
-        choices = c("please select", choices_o),
-        selected = selected_o
-      )
-      
-      updateSelectInput(
-        session, 
-        inputId = "pred1_col",
-        label = "predictions column 1 (optional)",
-        choices = c("please select", choices_p1),
-        selected = selected_p1
-      )
-      
-      updateSelectInput(
-        session, 
-        inputId = "pred2_col",
-        label = "predictions column 2 (optional)",
-        choices = c("please select", choices_p2),
-        selected = selected_p2
-      )
-      
-      updateRadioButtons(
-        session,
-        inputId = "plot_var_check_box",
-        label = "Select variable to plot:",
-        choices = reduced_df_cols
-      )
+      available_cols_update()
       
     }
     
@@ -563,86 +411,7 @@ server <- function(input, output, session) {
         input$dataset != "please select" && 
         !input$pred2_col %in% default_select) {
       
-      selected_df_cols <- colnames(get(input$dataset, envir = globalenv()))
-      
-      selected_w <- input$weights_col
-      
-      selected_o <- input$observed_col
-      
-      selected_p1 <- input$pred1_col
-      
-      selected_p2 <- input$pred2_col
-      
-      reduced_df_cols <- setdiff(selected_df_cols,
-                                 c(selected_w,
-                                   selected_o,
-                                   selected_p1,
-                                   selected_p2))
-      
-      if (length(reduced_df_cols) == 0) {
-        
-        reduced_df_cols <- "no columns left to select"
-        
-      }
-      
-      choices_w <- setdiff(selected_df_cols,
-                           c(selected_o,
-                             selected_p1,
-                             selected_p2))
-      
-      choices_o <- setdiff(selected_df_cols,
-                           c(selected_w,
-                             selected_p1,
-                             selected_p2))
-      
-      choices_p1 <- setdiff(selected_df_cols,
-                            c(selected_o,
-                              selected_w,
-                              selected_p2))
-      
-      choices_p2 <- setdiff(selected_df_cols,
-                            c(selected_o,
-                              selected_w,
-                              selected_p1))
-      
-      updateSelectInput(
-        session, 
-        inputId = "weights_col",
-        label = "weights column (required)",
-        choices = c("please select", choices_w),
-        selected = selected_w
-      )
-      
-      updateSelectInput(
-        session, 
-        inputId = "observed_col",
-        label = "observed column (optional)",
-        choices = c("please select", choices_o),
-        selected = selected_o
-      )
-      
-      updateSelectInput(
-        session, 
-        inputId = "pred1_col",
-        label = "predictions column 1 (optional)",
-        choices = c("please select", choices_p1),
-        selected = selected_p1
-      )
-      
-      updateSelectInput(
-        session, 
-        inputId = "pred2_col",
-        label = "predictions column 2 (optional)",
-        choices = c("please select", choices_p2),
-        selected = selected_p2
-      )
-      
-      updateRadioButtons(
-        session,
-        inputId = "plot_var_check_box",
-        label = "Select variable to plot:",
-        choices = reduced_df_cols
-      )
+      available_cols_update()
       
     }
     
