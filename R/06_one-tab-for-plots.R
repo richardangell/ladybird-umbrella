@@ -277,7 +277,7 @@ server <- function(input, output, session) {
   
   observeEvent(input$weights_col, {
     
-    default_select <- c("please select data.frame", "please select")
+    default_select <- c("please select data.frame")#, "please select")
     
     if (length(input$dataset) > 0 && 
         input$dataset != "please select" && 
@@ -364,7 +364,7 @@ server <- function(input, output, session) {
 
   observeEvent(input$observed_col, {
     
-    default_select <- c("please select data.frame", "please select")
+    default_select <- c("please select data.frame")#, "please select")
     
     if (length(input$dataset) > 0 && 
         input$dataset != "please select" && 
@@ -451,7 +451,7 @@ server <- function(input, output, session) {
   
   observeEvent(input$pred1_col, {
     
-    default_select <- c("please select data.frame", "please select")
+    default_select <- c("please select data.frame")#, "please select")
     
     if (length(input$dataset) > 0 && 
         input$dataset != "please select" && 
@@ -539,7 +539,7 @@ server <- function(input, output, session) {
   
   observeEvent(input$pred2_col, {
     
-    default_select <- c("please select data.frame", "please select")
+    default_select <- c("please select data.frame")#, "please select")
     
     if (length(input$dataset) > 0 && 
         input$dataset != "please select" && 
