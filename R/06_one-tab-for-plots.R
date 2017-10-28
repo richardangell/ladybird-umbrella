@@ -299,6 +299,12 @@ server <- function(input, output, session) {
                                    selected_p1,
                                    selected_p2))
       
+      if (length(reduced_df_cols) == 0) {
+        
+        reduced_df_cols <- "no columns left to select"
+        
+      }
+      
       choices_w <- setdiff(selected_df_cols,
                            c(selected_o,
                              selected_p1,
@@ -385,6 +391,12 @@ server <- function(input, output, session) {
                                    selected_o,
                                    selected_p1,
                                    selected_p2))
+      
+      if (length(reduced_df_cols) == 0) {
+        
+        reduced_df_cols <- "no columns left to select"
+        
+      }
       
       choices_w <- setdiff(selected_df_cols,
                            c(selected_o,
@@ -473,6 +485,12 @@ server <- function(input, output, session) {
                                    selected_p1,
                                    selected_p2))
       
+      if (length(reduced_df_cols) == 0) {
+        
+        reduced_df_cols <- "no columns left to select"
+        
+      }
+      
       choices_w <- setdiff(selected_df_cols,
                            c(selected_o,
                              selected_p1,
@@ -560,6 +578,12 @@ server <- function(input, output, session) {
                                    selected_o,
                                    selected_p1,
                                    selected_p2))
+      
+      if (length(reduced_df_cols) == 0) {
+        
+        reduced_df_cols <- "no columns left to select"
+        
+      }
       
       choices_w <- setdiff(selected_df_cols,
                            c(selected_o,
