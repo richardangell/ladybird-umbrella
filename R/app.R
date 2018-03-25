@@ -139,11 +139,12 @@ dashboardBody <- dashboardBody(
       )
     ),
     tabItem(
-      "summary_graphs", 
+      tabName = "summary_graphs", 
       h2("Summary Graphs"),
       textOutput("selected_variable"),
       #box(plotOutput("plot"))
-      plotlyOutput("plot")
+      fluidRow(column(width = 3, tableOutput('tbl')),
+               column(width = 4, plotlyOutput("plot")))
     )
   )
 )
@@ -552,6 +553,22 @@ server <- function(input, output, session) {
     }
     
   })
+  
+
+    
+  output$tbl <- renderTable({ 
+    
+
+    if (input$plot_var_check_box != "please select" & 
+        input$plot_var_check_box != "please select data.frame") {
+      
+      summary_reactive()[[input$plot_var_check_box]]$summary
+      
+    }
+      
+  }) 
+  
+  
 }
 
 
