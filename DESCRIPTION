@@ -1,0 +1,10 @@
+Package: ladybird_umbrella
+Type: Package
+Title: Interactive visualisation tool
+Version: 0.1.0
+Author: Richard Angell
+Maintainer: Richard Angell <richardangell37@gmail.comt>
+Description: Interactive visualisation tool with Shiny.
+License: MIT Licence
+Encoding: UTF-8
+LazyData: true
