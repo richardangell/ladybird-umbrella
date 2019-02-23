@@ -79,22 +79,26 @@ server <- function(input, output, session) {
         
       }
       
+      predictions <- NULL
+      
       if (input$pred1_col != "please select") {
         
-        summary_args$predictions1 <- input$pred1_col
+        predictions <- c(predictions, input$pred1_col)
         
       }
       
       if (input$pred2_col != "please select") {
         
-        summary_args$predictions2 <- input$pred2_col
+        predictions <- c(predictions, input$pred2_col)
         
       }
       
-      # call summary function on selected columns in data.frame
-      summary_results <- do.call(what = summarise_variables,
-                                 args = summary_args)
+      summary_args$predictions <- predictions
       
+      # call summary function on selected columns in data.frame
+      summary_results <- do.call(what = helpers::summarise_columns,
+                                 args = summary_args)
+
       # add summarised dataset info to results
       results_plus_metadata <- c(
         list(
@@ -134,12 +138,12 @@ server <- function(input, output, session) {
     if (input$plot_var_check_box != "please select" & 
         input$plot_var_check_box != "please select data.frame") {
       
-      plot_agrs <- list(df = summary_reactive()[[input$plot_var_check_box]]$summary,
+      plot_agrs <- list(df = summary_reactive()[[input$plot_var_check_box]],
                         col = input$plot_var_check_box)
       
       if (input$weights_col != "please select") {
         
-        plot_agrs$weight <- summary_reactive()$metadata[["weights"]]
+        plot_agrs$weights <- summary_reactive()$metadata[["weights"]]
         
       }
       
@@ -161,7 +165,7 @@ server <- function(input, output, session) {
         
       }
       
-      do.call(what = plot_bar_line_graph,
+      do.call(what = helpers::plot_bar_line_graph,
               args = plot_agrs)
       
     }
@@ -404,7 +408,7 @@ server <- function(input, output, session) {
     if (input$plot_var_check_box != "please select" & 
         input$plot_var_check_box != "please select data.frame") {
       
-      summary_reactive()[[input$plot_var_check_box]]$summary
+      summary_reactive()[[input$plot_var_check_box]]
       
     }
     

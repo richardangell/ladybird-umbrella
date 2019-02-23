@@ -1,15 +1,10 @@
+library(data.table)
 library(shiny)
 library(shinydashboard)
 library(dplyr)
 library(rlang)
 library(plotly)
-#source("./R/summarise_variables.R", local = TRUE)
-#source("./R/summarise_column.R", local = TRUE)
-#source("./R/dplyr_summarise.R", local = TRUE)
-#source("./R/bin_ordered.R", local = TRUE)
-#source("./R/plot_bar_line_graphs.R", local = TRUE)
-
-
+library(helpers)
 
 
 data_frame_objects <- function(objects_name = ls(envir = globalenv())) {
@@ -45,12 +40,13 @@ summarise_df_cols <- function(df, cols) {
 
 
 
-
+source('./R/ui.R')
+source('./R/server.R')
 
 
 ladybird_umbrella <- function() {
   
-  shinyApp(ui, server)
+  runApp('R')
   
 }
 
