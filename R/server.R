@@ -2,17 +2,7 @@ server <- function(input, output, session) {
   
   session$onSessionEnded(stopApp)
   
-  observe(print(paste0("dataset: ", input$dataset)))
-  
-  observe(print(paste0("weights_col: ", input$weights_col)))
-  
-  observe(print(paste0("observed_col: ", input$observed_col)))
-  
-  observe(print(paste0("pred1_col: ", input$pred1_col)))
-  
-  observe(print(paste0("pred2_col: ", input$pred2_col)))
-  
-  observe(print(paste0("is.null pred2_col: ", input$pred2_col == "")))
+  observe(print(paste(input$sidebarItemExpanded)))
   
   #---------------------------------------------------------------------------#
   # show error messages if summary button pressed w/o acceptable inputs ----
@@ -24,6 +14,12 @@ server <- function(input, output, session) {
     
     if (input$dataset == "please select") {
       
+      shinyalert(
+        title = "No data.frame selected", 
+        text = "Select a data.frame before requesting summaries", 
+        type = "error"
+      )
+      
       id <<- showNotification("Calculate variable summaries button pressed. ERROR: No data.frame selected, no summaries calculated.",
                               type = "error")
       
@@ -34,8 +30,11 @@ server <- function(input, output, session) {
       
     } else {
       
-      id <<- showNotification(paste("Calculate variable summaries button pressed."),
-                              type = "message")
+      shinyalert(
+        title = "Summary inputs accepted!", 
+        text = "Summaries will calculate", 
+        type = "success"
+      )
       
     }
     
@@ -61,36 +60,25 @@ server <- function(input, output, session) {
                                    input$pred1_col,
                                    input$pred2_col))
       
-      #summarise_df_cols(get(input$dataset, envir = globalenv()),
-      #                  reduced_df_cols)
-      
       summary_args <- list(df = get(input$dataset, envir = globalenv()),
                            cols = reduced_df_cols)
       
       if (input$weights_col != "please select") {
-        
         summary_args$weight <- input$weights_col
-        
       }
       
       if (input$observed_col != "please select") {
-        
         summary_args$observed <- input$observed_col
-        
       }
       
       predictions <- NULL
       
       if (input$pred1_col != "please select") {
-        
         predictions <- c(predictions, input$pred1_col)
-        
       }
       
       if (input$pred2_col != "please select") {
-        
         predictions <- c(predictions, input$pred2_col)
-        
       }
       
       summary_args$predictions <- predictions
@@ -115,70 +103,11 @@ server <- function(input, output, session) {
       
     }
     
-  })
+  }, ignoreNULL = FALSE)
   
-  #---------------------------------------------------------------------------#
-  # plot for selected explanatory variable ----
-  #---------------------------------------------------------------------------#
-  
-  #output$plot <- renderPlot({
-  #  
-  #  if (input$plot_var_check_box != "please select" & 
-  #        input$plot_var_check_box != "please select data.frame") {
-  #    
-  #    plot(summary_reactive()[[input$plot_var_check_box]], 
-  #         summary_reactive()[[input$plot_var_check_box]] * 2)
-  #    
-  #  }
-  #  
-  #})
-  
-  output$plot <- renderPlotly({
-    
-    if (input$plot_var_check_box != "please select" & 
-        input$plot_var_check_box != "please select data.frame") {
-      
-      plot_agrs <- list(df = summary_reactive()[[input$plot_var_check_box]],
-                        col = input$plot_var_check_box)
-      
-      if (input$weights_col != "please select") {
-        
-        plot_agrs$weights <- summary_reactive()$metadata[["weights"]]
-        
-      }
-      
-      if (input$observed_col != "please select") {
-        
-        plot_agrs$observed <- summary_reactive()$metadata[["observed"]]
-        
-      }
-      
-      if (input$pred1_col != "please select") {
-        
-        plot_agrs$predictions1 <- summary_reactive()$metadata[["predictions1"]]
-        
-      }
-      
-      if (input$pred2_col != "please select") {
-        
-        plot_agrs$predictions2 <- summary_reactive()$metadata[["predictions2"]]
-        
-      }
-      
-      do.call(what = helpers::plot_bar_line_graph,
-              args = plot_agrs)
-      
-    }
-    
-  })
-  
-  
-  output$selected_variable <- renderText({ 
-    
-    input$plot_var_check_box 
-    
-  })
-  
+  #----------------------------------------------------------------------------#
+  # function to update choices for drop down ----
+  #----------------------------------------------------------------------------#
   
   observeEvent(input$dataset, {
     
@@ -186,15 +115,10 @@ server <- function(input, output, session) {
     if (length(input$dataset) == 0 || input$dataset == "please select") {
       
       df_col_choices <- "please select data.frame"
-      
       df_col_choices_p <- df_col_choices
-      
       choices_w <- df_col_choices
-      
       choices_o <- df_col_choices
-      
       choices_p1 <- df_col_choices
-      
       choices_p2 <- df_col_choices
       
       #--------------------------------------------------------------------------#
@@ -204,19 +128,13 @@ server <- function(input, output, session) {
     } else {
       
       default_select <- c("please select data.frame", "please select")
-      
       selected_df_cols <- get_selected_df_cols(input$dataset)
-      
       df_col_choices <- selected_df_cols
-      
       df_col_choices_p <- c("please select", selected_df_cols)
-      
+    
       choices_w <- df_col_choices_p
-      
       choices_o <- df_col_choices_p
-      
       choices_p1 <- df_col_choices_p
-      
       choices_p2 <- df_col_choices_p
       
     }
@@ -252,22 +170,23 @@ server <- function(input, output, session) {
     updateRadioButtons(
       session,
       inputId = "plot_var_check_box",
-      label = "Select variable to plot:",
+      label = "Select variable to display:",
       choices = df_col_choices
     )
     
   })
+  
+  #----------------------------------------------------------------------------#
+  # function to update choices for drop down ----
+  #----------------------------------------------------------------------------#
   
   available_cols_update <- function() {
     
     selected_df_cols <- get_selected_df_cols(input$dataset)
     
     selected_w <- input$weights_col
-    
     selected_o <- input$observed_col
-    
     selected_p1 <- input$pred1_col
-    
     selected_p2 <- input$pred2_col
     
     reduced_df_cols <- setdiff(selected_df_cols,
@@ -343,6 +262,10 @@ server <- function(input, output, session) {
     
   }
   
+  #----------------------------------------------------------------------------#
+  # observe changes to variable select drop downs ----
+  #----------------------------------------------------------------------------#
+  
   observeEvent(input$weights_col, {
     
     default_select <- c("please select data.frame")#, "please select")
@@ -400,19 +323,75 @@ server <- function(input, output, session) {
     
   })
   
-  
-  
-  output$tbl <- renderTable({ 
-    
+  #----------------------------------------------------------------------------#
+  # outputs ----
+  #----------------------------------------------------------------------------#
+
+  output$plot <- renderPlotly({
     
     if (input$plot_var_check_box != "please select" & 
         input$plot_var_check_box != "please select data.frame") {
       
-      summary_reactive()[[input$plot_var_check_box]]
+      plot_agrs <- list(df = summary_reactive()[[input$plot_var_check_box]],
+                        col = input$plot_var_check_box)
+      
+      if (input$weights_col != "please select") {
+        plot_agrs$weights <- summary_reactive()$metadata[["weights"]]
+      }
+      
+      if (input$observed_col != "please select") {
+        plot_agrs$observed <- summary_reactive()$metadata[["observed"]]
+      }
+      
+      if (input$pred1_col != "please select") {
+        plot_agrs$predictions1 <- summary_reactive()$metadata[["predictions1"]]
+      }
+      
+      if (input$pred2_col != "please select") {
+        plot_agrs$predictions2 <- summary_reactive()$metadata[["predictions2"]]
+      }
+      
+      do.call(what = helpers::plot_bar_line_graph,
+              args = plot_agrs)
       
     }
     
-  }) 
+  })
   
+  output$selected_variable <- renderText({ 
+    input$plot_var_check_box 
+  })
   
+  output$tbl <- renderTable({ 
+    if (input$plot_var_check_box != "please select" & 
+        input$plot_var_check_box != "please select data.frame") {
+      summary_reactive()[[input$plot_var_check_box]]
+    }
+  })
+  
+  output$count <- renderValueBox({
+    valueBox(
+      value = 2,
+      subtitle = "Total downloads",
+      icon = icon("download")
+    )
+  })
+  
+  output$users <- renderValueBox({
+    valueBox(
+      48,
+      "Unique users",
+      icon = icon("users")
+    )
+  })
+  
+  output$rate <- renderValueBox({
+    valueBox(
+      50,
+      "Unique users",
+      icon = icon("users")
+    )
+  })
+  
+
 }
