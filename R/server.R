@@ -19,14 +19,47 @@ server <- function(input, output, session) {
         text = "Select a data.frame before requesting summaries", 
         type = "error"
       )
-      
-      id <<- showNotification("Calculate variable summaries button pressed. ERROR: No data.frame selected, no summaries calculated.",
-                              type = "error")
-      
+
     } else if (input$weights_col == "please select") {
       
-      id <<- showNotification("Calculate variable summaries button pressed. ERROR: No weights column selected, no summaries calculated.",
-                              type = "error")
+      shinyalert(
+        title = "No weights column selected", 
+        text = "Select a weights column before requesting summaries", 
+        type = "error"
+      )      
+      
+    } else if (input$weights_col != "please select") {
+      
+      col_inputs <- c(
+        input$weights_col, 
+        input$observed_col, 
+        input$pred1_col, 
+        input$pred2_col
+      )
+      
+      if (any(col_inputs == "please select")) {
+        
+        col_inputs <- col_inputs[-which(col_inputs == "please select")]
+        
+      }
+      
+
+      print(col_inputs)
+      print(length(col_inputs))
+      print(length(unique(col_inputs)))
+      print(length(col_inputs) != length(unique(col_inputs)))
+      
+      if (length(col_inputs) != length(unique(col_inputs))) {
+        
+        print('aaaa')
+        
+        shinyalert(
+          title = "Duplicate columns selected", 
+          text = "Select unique summary columns before requesting summaries", 
+          type = "error"
+        )  
+        
+      }
       
     } else {
       
@@ -200,58 +233,6 @@ server <- function(input, output, session) {
       reduced_df_cols <- "no columns left to select"
       
     }
-    
-    choices_w <- setdiff(selected_df_cols,
-                         c(selected_o,
-                           selected_p1,
-                           selected_p2))
-    
-    choices_o <- setdiff(selected_df_cols,
-                         c(selected_w,
-                           selected_p1,
-                           selected_p2))
-    
-    choices_p1 <- setdiff(selected_df_cols,
-                          c(selected_o,
-                            selected_w,
-                            selected_p2))
-    
-    choices_p2 <- setdiff(selected_df_cols,
-                          c(selected_o,
-                            selected_w,
-                            selected_p1))
-    
-    updateSelectInput(
-      session, 
-      inputId = "weights_col",
-      label = "weights column (required)",
-      choices = c("please select", choices_w),
-      selected = selected_w
-    )
-    
-    updateSelectInput(
-      session, 
-      inputId = "observed_col",
-      label = "observed column (optional)",
-      choices = c("please select", choices_o),
-      selected = selected_o
-    )
-    
-    updateSelectInput(
-      session, 
-      inputId = "pred1_col",
-      label = "predictions column 1 (optional)",
-      choices = c("please select", choices_p1),
-      selected = selected_p1
-    )
-    
-    updateSelectInput(
-      session, 
-      inputId = "pred2_col",
-      label = "predictions column 2 (optional)",
-      choices = c("please select", choices_p2),
-      selected = selected_p2
-    )
     
     updateRadioButtons(
       session,
