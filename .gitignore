@@ -1,3 +1,6 @@
+# Package install location
+Packages/
+
 # History files
 .Rhistory
 .Rapp.history
