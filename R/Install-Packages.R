@@ -29,7 +29,7 @@ install.packages("purrr", lib = install_loc, destdir = pkg_loc)
 install.packages("httr", lib = install_loc, destdir = pkg_loc)
 install.packages("yaml", lib = install_loc, destdir = pkg_loc)
 install.packages("backports", lib = install_loc, destdir = pkg_loc)
-
+install.packages("cli", lib = install_loc, destdir = pkg_loc)
 
 
 
