@@ -28,12 +28,11 @@ install.packages("glue", lib = install_loc, destdir = pkg_loc)
 install.packages("purrr", lib = install_loc, destdir = pkg_loc)
 install.packages("httr", lib = install_loc, destdir = pkg_loc)
 install.packages("yaml", lib = install_loc, destdir = pkg_loc)
-
+install.packages("backports", lib = install_loc, destdir = pkg_loc)
 
 
 
 
 #install.packages("ggplot2movies", lib = install_loc, destdir = pkg_loc)
-#install.packages("backports", lib = install_loc, destdir = pkg_loc)
 #install.packages("leaflet", lib = install_loc, destdir = pkg_loc)
 
